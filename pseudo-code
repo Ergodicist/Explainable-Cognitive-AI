@@ -1,0 +1,283 @@
+## Algorithm 1: Knowledge Base Initialization Framework
+
+**Algorithm:** `INITIALIZE_KNOWLEDGE_BASE()`
+
+// Initialize logical atoms, pointing relationships, and initial weights
+
+**Begin:**
+
+    // 1. Define the set of logical atoms
+    ATOM_DATA ← [
+        (atom_id, atom_name, atom_type),
+        (atom_id, atom_name, atom_type),
+        ...
+    ]
+
+    // 2. Define the set of pointing relationships
+    RELATION_DATA ← [
+        (source_atom_id, target_atom_id, relation_type, relation_strength),
+        (source_atom_id, target_atom_id, relation_type, relation_strength),
+        ...
+    ]
+
+    // 3. Define the set of initial weights
+    WEIGHT_DATA ← [
+        (weight_id, weight_name, weight_value),
+        (weight_id, weight_name, weight_value),
+        ...
+    ]
+
+    // Build knowledge base
+    **For each** atom_entry **in** ATOM_DATA:
+        CREATE_LOGICAL_ATOM(atom_id, atom_name, atom_type)
+        ADD_TO atom_dict[atom_id]
+
+    **For each** relation_entry **in** RELATION_DATA:
+        CREATE_POINTING_RELATION(source_atom_id, target_atom_id, relation_type, relation_strength)
+        ADD_TO relation_list
+
+    **For each** weight_entry **in** WEIGHT_DATA:
+        CREATE_INITIAL_WEIGHT(weight_id, weight_name, weight_value)
+        ADD_TO weight_dict[weight_id]
+
+**End**
+
+---
+
+## Algorithm 2: Add New Atom
+
+**Algorithm:** `ADD_NEW_ATOM(new_atom_id, new_atom_name, new_atom_type)`
+
+// Add a new logical atom to the knowledge base
+
+**Input:** atom_id, atom_name, atom_type  
+**Output:** success/failure status
+
+**Begin:**
+
+    // Check if atom_id already exists
+    **If** new_atom_id **in** atom_dict.keys():
+        **Return** "ERROR: Atom ID already exists"
+
+    // Create new atom
+    new_atom ← CREATE_LOGICAL_ATOM(new_atom_id, new_atom_name, new_atom_type)
+    atom_dict[new_atom_id] ← new_atom
+
+    **Return** "SUCCESS: Atom added"
+
+**End**
+
+---
+
+## Algorithm 3: Add New Pointing Relation
+
+**Algorithm:** `ADD_NEW_POINTER(source_atom_id, target_atom_id, relation_type, relation_strength)`
+
+// Add a new pointing relationship
+
+**Input:** source_atom_id, target_atom_id, relation_type, relation_strength  
+**Output:** success/failure status
+
+**Begin:**
+
+    // Verify atom existence
+    **If** source_atom_id **not in** atom_dict.keys():
+        **Return** "ERROR: Source atom does not exist"
+
+    **If** target_atom_id **not in** atom_dict.keys():
+        **Return** "ERROR: Target atom does not exist"
+
+    // Check if relation already exists
+    **For each** relation **in** relation_list:
+        **If** relation.source = source_atom_id **and** relation.target = target_atom_id:
+            **Return** "ERROR: Relation already exists"
+
+    // Add new relation
+    new_relation ← CREATE_POINTING_RELATION(source_atom_id, target_atom_id, relation_type, relation_strength)
+    relation_list ← relation_list ∪ [new_relation]
+
+    **Return** "SUCCESS: Relation added"
+
+**End**
+
+---
+
+## Algorithm 4: Modify Initial Weight
+
+**Algorithm:** `MODIFY_WEIGHT(weight_id, new_weight_value)`
+
+// Modify the value of an existing initial weight
+
+**Input:** weight_id, new_weight_value  
+**Output:** success/failure status
+
+**Begin:**
+
+    // Verify weight existence
+    **If** weight_id **not in** weight_dict.keys():
+        **Return** "ERROR: Weight does not exist"
+
+    // Validate weight value range
+    **If** new_weight_value < 0 **or** new_weight_value > 1:
+        **Return** "ERROR: Weight value should be between 0 and 1"
+
+    // Modify weight value
+    weight_dict[weight_id].value ← new_weight_value
+
+    **Return** "SUCCESS: Weight updated"
+
+**End**
+
+---
+
+## Algorithm 5: Add New Weight
+
+**Algorithm:** `ADD_NEW_WEIGHT(new_weight_id, new_weight_name, initial_weight_value)`
+
+// Add a new initial weight
+
+**Input:** weight_id, weight_name, weight_value  
+**Output:** success/failure status
+
+**Begin:**
+
+    // Check if weight_id already exists
+    **If** new_weight_id **in** weight_dict.keys():
+        **Return** "ERROR: Weight ID already exists"
+
+    // Validate weight value range
+    **If** initial_weight_value < 0 **or** initial_weight_value > 1:
+        **Return** "ERROR: Weight value should be between 0 and 1"
+
+    // Create new weight object
+    new_weight ← CREATE_INITIAL_WEIGHT(new_weight_id, new_weight_name, initial_weight_value)
+    weight_dict[new_weight_id] ← new_weight
+
+    // Also add as logical atom to knowledge base
+    **If** new_weight_id **not in** atom_dict.keys():
+        weight_atom ← CREATE_LOGICAL_ATOM(new_weight_id, new_weight_name, 'weight')
+        atom_dict[new_weight_id] ← weight_atom
+
+    **Return** "SUCCESS: Weight added"
+
+**End**
+
+---
+
+## Algorithm 6: Delete Atom and Associated Relations
+
+**Algorithm:** `DELETE_ATOM(atom_id)`
+
+// Delete a logical atom and all its associated relations
+
+**Input:** atom_id  
+**Output:** success/failure status
+
+**Begin:**
+
+    // Verify atom existence
+    **If** atom_id **not in** atom_dict.keys():
+        **Return** "ERROR: Atom does not exist"
+
+    // Delete all relations where this atom is source or target
+    **For** i ← relation_list.length-1 **down to** 0:
+        **If** relation_list[i].source = atom_id **or** relation_list[i].target = atom_id:
+            REMOVE relation_list[i] **from** relation_list
+
+    // Delete atom
+    REMOVE atom_id **from** atom_dict
+
+    **Return** "SUCCESS: Atom and its relations deleted"
+
+**End**
+
+---
+
+## Algorithm 7: Activation Propagation-Based Reasoning/Decision Process
+
+**Algorithm:** `ACTIVATION_PROPAGATION_DECISION(input_atom_id_list)`
+
+// Simulate the complete cognitive process from perceptual input to decision
+
+**Input:** A set of initially activated logical atoms (e.g., from sensors)  
+**Output:** ID of the finally selected action atom
+
+**Begin:**
+
+    // 1. Initialize activation field
+    **For each** atom **in** atom_dict:
+        atom.current_activation ← 0
+
+    **For each** input_atom_id **in** input_atom_id_list:
+        atom_dict[input_atom_id].current_activation ← 1.0 // Initial activation
+
+    // 2. Asynchronous activation propagation (simulate one time step)
+    **For each** relation **in** relation_list:
+        source_atom ← atom_dict[relation.source]
+        target_atom ← atom_dict[relation.target]
+        
+        **If** source_atom.current_activation > ACTIVATION_THRESHOLD:
+            // Activation propagates along pointing relation
+            transmitted_activation ← source_atom.current_activation × relation.relation_strength
+            target_atom.next_activation ← target_atom.next_activation + transmitted_activation
+
+    // 3. Global workspace integration and decision (simplified)
+    // Collect high-activation "action" type atoms
+    candidate_action_list ← []
+    
+    **For each** atom **in** atom_dict:
+        **If** atom.atom_type == "action" **and** atom.current_activation > DECISION_THRESHOLD:
+            weight ← CALCULATE_WEIGHT(atom) // Call Algorithm 8
+            ADD (atom, weight) **to** candidate_action_list
+
+    // 4. Select and return the action with highest weight
+    **If** candidate_action_list **is not empty**:
+        SORT candidate_action_list **by** weight **descending**
+        **Return** candidate_action_list[0].atom_id
+    **Else**:
+        **Return** null // No clear decision
+
+**End**
+
+---
+
+## Algorithm 8: Real-Time Weight Calculation
+
+**Algorithm:** `CALCULATE_WEIGHT(target_atom)`
+
+// Calculate the final weight for a target event/action: W = Σ(Initial_Weightᵢ × Relevanceᵢ)
+
+**Input:** A logical atom (usually an action or event)  
+**Output:** Calculated weight value
+
+**Begin:**
+
+    total_weight ← 0
+
+    // Traverse all initial weight atoms reachable to this target atom
+    **For each** weight_atom **in** weight_dict:
+        relevance ← CALCULATE_RELEVANCE(weight_atom, target_atom)
+        total_weight ← total_weight + weight_atom.weight_value × relevance
+
+    **Return** total_weight
+
+**End**
+
+---
+
+**Algorithm:** `CALCULATE_RELEVANCE(atom_A, atom_B)`
+
+// Calculate relevance between atom_A and atom_B
+// (e.g., via graph connectivity path strength estimation)
+// This is a simplified version; actual implementation would be more complex,
+// potentially involving path finding and strength multiplication.
+
+**Begin:**
+
+    // Implementation details: e.g., use Depth-First Search (DFS) to find all paths
+    // from A to B, and combine the relation strengths along those paths.
+    
+    // Here returns a simulated value.
+    **Return** a simulated value between [0, 1]
+
+**End**
